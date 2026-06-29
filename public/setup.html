@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Italia Stream · Setup</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{background:#0a0a1a;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+        .card{background:linear-gradient(135deg,#141430,#1a1a3e);border-radius:20px;padding:36px;max-width:500px;width:100%;border:1px solid rgba(255,255,255,0.06);text-align:center}
+        h1{font-size:24px;margin-bottom:8px;color:#e94560}
+        p{color:#aaa;font-size:14px;margin-bottom:24px;line-height:1.6}
+        code{background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:4px;font-size:12px;color:#e94560}
+        .cmd{background:rgba(0,0,0,0.3);border-radius:10px;padding:14px;text-align:left;font-family:monospace;font-size:12px;color:#aaa;margin-bottom:20px}
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>⚙️ Configura la fonte</h1>
+        <p>Per usare Italia Stream devi impostare la variabile d'ambiente <code>STREAM_SOURCE</code> con l'URL manifest di un addon che fornisce stream.</p>
+        <div class="cmd">
+            STREAM_SOURCE=https://mio-addon.com/manifest.json<br>
+            npm start
+        </div>
+        <p>L'addon wrappa automaticamente gli stream col redirect browser.</p>
+    </div>
+</body>
+</html>

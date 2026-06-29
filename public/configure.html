@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ItaStream · Configure</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+            background:#0b0b14;color:#e0e0e0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+            display:flex;justify-content:center;padding:32px 16px;min-height:100vh
+        }
+        .card{
+            background:#12121f;border-radius:16px;padding:28px;max-width:460px;width:100%;
+            border:1px solid rgba(255,255,255,0.05);box-shadow:0 8px 32px rgba(0,0,0,0.4)
+        }
+        .top{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+        .logo{
+            width:44px;height:44px;background:linear-gradient(135deg,#e94560,#b8304a);border-radius:12px;
+            display:flex;align-items:center;justify-content:center;font-size:20px
+        }
+        .top h1{font-size:20px;font-weight:700;letter-spacing:-0.3px}
+        .top .dot{width:8px;height:8px;border-radius:50%;margin-left:auto}
+        .dot.on{background:#22c55e;box-shadow:0 0 8px #22c55e66}
+        .dot.off{background:#ef4444;box-shadow:0 0 8px #ef444466}
+
+        .row{
+            display:flex;align-items:center;justify-content:space-between;
+            padding:10px 14px;border-radius:10px;margin-bottom:4px;
+            background:rgba(255,255,255,0.02)
+        }
+        .row .left{display:flex;align-items:center;gap:8px;font-size:13px}
+        .row .left span{font-size:15px}
+        .row .right{font-size:11px;color:#888}
+
+        hr{border:0;border-top:1px solid rgba(255,255,255,0.05);margin:14px 0}
+
+        .btn{
+            display:block;width:100%;padding:14px;border-radius:10px;font-size:14px;font-weight:600;
+            cursor:pointer;text-align:center;border:none;transition:.2s
+        }
+        .btn.install{background:linear-gradient(135deg,#e94560,#c23152);color:#fff;margin-top:20px}
+        .btn.install:hover{filter:brightness(1.15)}
+        .btn.copy{background:rgba(255,255,255,0.04);color:#aaa;margin-top:6px;border:1px solid rgba(255,255,255,0.06)}
+        .btn.copy:hover{color:#fff}
+
+        .url{display:none;margin-top:10px}
+        .url.show{display:block}
+        .url input{
+            width:100%;padding:10px 12px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);
+            border-radius:8px;color:#e94560;font-size:11px;font-family:'SF Mono',monospace;cursor:pointer;outline:none
+        }
+
+        .info{margin-top:20px;font-size:11px;color:#555;line-height:1.7}
+        .info strong{color:#888}
+        .footer{text-align:center;margin-top:16px;font-size:10px;color:#333}
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="top">
+            <div class="logo">🍿</div>
+            <h1>ItaStream</h1>
+            <div class="dot on" id="status"></div>
+        </div>
+
+        <div class="row"><div class="left"><span>🎬</span> VixSrc</div><div class="right">calpezz8.space</div></div>
+        <div class="row"><div class="left"><span>⚡</span> VidxGo</div><div class="right">v.vidxgo.co</div></div>
+        <div class="row"><div class="left"><span>🏛️</span> Altadefinizione</div><div class="right">altadefinizionestreaming.com</div></div>
+
+        <hr>
+
+        <div class="row"><div class="left">Server</div><div class="right"><code id="host" style="color:#888;font-size:11px">…</code></div></div>
+
+        <button class="btn install" onclick="install()">Installa su Stremio</button>
+        <div class="url" id="urlBox">
+            <input type="text" id="manifestUrl" readonly onclick="this.select()">
+        </div>
+        <button class="btn copy" onclick="copyLink()">Copia link manifest</button>
+
+        <div class="info">
+            <strong>📋 Installazione</strong><br>
+            Clicca Installa o copia il link e incollalo in Stremio → Addon → Installa da URL.<br><br>
+            <strong>📺 Dispositivi</strong> Desktop · Android TV · Android mobile
+        </div>
+        <div class="footer">Nessun dato memorizzato</div>
+    </div>
+
+    <script>
+        const base = window.location.origin;
+        document.getElementById('host').textContent = base;
+
+        fetch(base + '/health')
+            .then(r => r.json())
+            .then(d => document.getElementById('status').className = d.ok ? 'dot on' : 'dot off')
+            .catch(() => document.getElementById('status').className = 'dot off');
+
+        function murl() { return base + '/manifest.json'; }
+
+        function install() {
+            const u = murl();
+            document.getElementById('manifestUrl').value = u;
+            document.getElementById('urlBox').classList.add('show');
+            navigator.clipboard.writeText(u).catch(()=>{});
+            try { window.open('stremio://' + base.replace(/^https?:\/\//,'') + '/manifest.json', '_blank'); } catch {}
+        }
+
+        function copyLink() {
+            const u = murl();
+            document.getElementById('manifestUrl').value = u;
+            document.getElementById('urlBox').classList.add('show');
+            navigator.clipboard.writeText(u).catch(()=>{});
+        }
+    </script>
+</body>
+</html>

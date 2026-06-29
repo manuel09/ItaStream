@@ -1,0 +1,20 @@
+{
+  "name": "italia-stream",
+  "version": "1.0.0",
+  "description": "Stremio addon - streaming Italia con redirect browser",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.0",
+    "cheerio": "^1.2.0",
+    "chrome-launcher": "^1.2.1",
+    "chrome-remote-interface": "^0.34.0",
+    "cloudscraper": "^4.6.0",
+    "express": "^4.21.0",
+    "node-fetch": "^2.7.0",
+    "socks": "^2.8.9",
+    "socks-proxy-agent": "^10.1.0"
+  }
+}

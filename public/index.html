@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ItaStream</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+            font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+            background:radial-gradient(ellipse at top,#1a1030,#090617 60%);
+            color:#ecedee;min-height:100vh;display:flex;align-items:center;justify-content:center;
+            padding:16px
+        }
+        .card{
+            background:linear-gradient(180deg,rgba(255,255,255,0.035) 0%,rgba(255,255,255,0.015) 100%);
+            border:1px solid rgba(255,255,255,0.06);border-radius:24px;padding:28px;
+            max-width:420px;width:100%;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)
+        }
+        .top{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+        .top .icon{
+            width:42px;height:42px;border-radius:12px;
+            background:linear-gradient(135deg,#f43f5e,#e11d48);
+            display:grid;place-items:center;font-size:19px
+        }
+        .top h1{font-size:20px;font-weight:700;letter-spacing:-0.4px}
+        .top .badge{
+            margin-left:auto;display:flex;align-items:center;gap:5px;
+            font-size:10px;font-weight:500;color:#a1a1aa;background:rgba(255,255,255,0.04);
+            padding:4px 10px;border-radius:20px
+        }
+        .badge .dot{width:6px;height:6px;border-radius:50%}
+        .badge .dot.green{background:#22c55e;box-shadow:0 0 4px #22c55e88}
+        .badge .dot.red{background:#ef4444}
+
+        .sources{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:20px}
+        .src{
+            background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.04);
+            border-radius:12px;padding:12px 6px;text-align:center;font-size:12px;
+            font-weight:500;color:#a1a1aa;transition:.2s
+        }
+        .src:hover{background:rgba(255,255,255,0.04);border-color:rgba(244,63,94,0.25);color:#ecedee}
+        .src .emoji{display:block;font-size:22px;margin-bottom:3px}
+
+        .sep{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent);margin:0 0 18px}
+
+        .btns{display:grid;grid-template-columns:1fr auto;gap:6px}
+        .btn{
+            padding:14px 18px;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;
+            border:none;transition:.15s;text-align:center
+        }
+        .btn.install{background:linear-gradient(135deg,#f43f5e,#e11d48);color:#fff}
+        .btn.install:hover{filter:brightness(1.12);transform:translateY(-1px)}
+        .btn.copy{
+            background:rgba(255,255,255,0.04);color:#a1a1aa;border:1px solid rgba(255,255,255,0.06);
+            width:48px;padding:0
+        }
+        .btn.copy:hover{color:#fff;border-color:rgba(255,255,255,0.15)}
+        .btn.copy.copied{color:#22c55e;border-color:#22c55e55}
+
+        .url{grid-column:1/-1;display:none}
+        .url.show{display:block}
+        .url input{
+            width:100%;padding:10px 14px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);
+            border-radius:10px;color:#fb7185;font-size:11px;font-family:'SF Mono','Fira Code',monospace;
+            outline:none;text-overflow:ellipsis
+        }
+        .url input::selection{background:#f43f5e33}
+
+        .info{font-size:10px;color:#52526e;margin-top:16px;text-align:center;line-height:1.7}
+        .info span{color:#71718f}
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="top">
+            <div class="icon">🍿</div>
+            <h1>ItaStream</h1>
+            <div class="badge" id="statusBadge"><div class="dot green" id="dot"></div><span id="statusText">online</span></div>
+        </div>
+
+        <div class="sources">
+            <div class="src"><span class="emoji">🎬</span>VixSrc</div>
+            <div class="src"><span class="emoji">⚡</span>VidxGo</div>
+            <div class="src"><span class="emoji">🏛️</span>Altadefinizione</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="btns">
+            <button class="btn install" onclick="install()">Installa su Stremio</button>
+            <button class="btn copy" id="copyBtn" onclick="copyUrl()" title="Copia manifest">📋</button>
+            <div class="url" id="urlRow"><input type="text" id="murl" readonly onclick="this.select();copyUrl()"></div>
+        </div>
+
+        <div class="info">
+            <span>Aggiungi addon</span> &rarr; Stremio &rarr; Addon &rarr; Installa da URL<br>
+            Desktop · Android TV · Android
+        </div>
+    </div>
+
+    <script>
+        const base = window.location.origin;
+        const mu = () => base + '/manifest.json';
+
+        fetch(base + '/health')
+            .then(r => r.json()).then(d => {
+                document.getElementById('dot').className = d.ok ? 'dot green' : 'dot red';
+                document.getElementById('statusText').textContent = d.ok ? 'online' : 'offline';
+            }).catch(() => {
+                document.getElementById('dot').className = 'dot red';
+                document.getElementById('statusText').textContent = 'offline';
+            });
+
+        function install() {
+            const u = mu();
+            document.getElementById('murl').value = u;
+            document.getElementById('urlRow').classList.add('show');
+            copy(u);
+            try { window.open('stremio://' + base.replace(/^https?:\/\//,'') + '/manifest.json', '_blank'); } catch {}
+        }
+
+        function copyUrl() {
+            const u = mu();
+            document.getElementById('murl').value = u;
+            document.getElementById('urlRow').classList.add('show');
+            copy(u);
+        }
+
+        function copy(text) {
+            const btn = document.getElementById('copyBtn');
+            const done = () => { btn.textContent = '✓'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = '📋'; btn.classList.remove('copied'); }, 1800); };
+            if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(text).then(done); return; }
+            const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;left:-9999px';
+            document.body.appendChild(ta); ta.select();
+            try { document.execCommand('copy'); done(); } catch {}
+            document.body.removeChild(ta);
+        }
+    </script>
+</body>
+</html>
